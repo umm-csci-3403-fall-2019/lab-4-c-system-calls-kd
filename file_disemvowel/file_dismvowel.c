@@ -52,8 +52,25 @@ void disemvowel(FILE* inputFile, FILE* outputFile) {
        char* in_buf = (char*)calloc(BUF_SIZE, sizeof(char));
        char* out_buf = (char*)calloc(BUF_SIZE, sizeof(char));
 
-  
+     int non_vowels;
+     int running = 1;
+     int num_chars;
+     while(running){
+        num_chars = (int)fread(in_buf, sizeof(char), BUF_SIZE, inputFile);
 
+        if(!num_chars){
+          break;
+        }
+  
+        non_vowels = copy_non_vowels(num_chars, in_buf, out_buf);
+	      fwrite(out_buf, sizeof(char), non_vowels, outputFile); // tracking the number of non_vowels
+     }
+
+     fclose(outputFile);
+     fclose(inputFile);
+
+     free(in_buf);
+     free(out_buf);
 
 }
 
