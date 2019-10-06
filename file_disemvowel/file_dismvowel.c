@@ -49,28 +49,28 @@ void disemvowel(FILE* inputFile, FILE* outputFile) {
      * use fwrite to write that out.
      */
 
-       char* in_buf = (char*)calloc(BUF_SIZE, sizeof(char));
-       char* out_buf = (char*)calloc(BUF_SIZE, sizeof(char));
+       char* in_buff = (char*)calloc(BUF_SIZE, sizeof(char));
+       char* out_buff = (char*)calloc(BUF_SIZE, sizeof(char));
 
      int non_vowels;
      int running = 1;
      int num_chars;
      while(running){
-        num_chars = (int)fread(in_buf, sizeof(char), BUF_SIZE, inputFile);
+        num_chars = (int)fread(in_buff, sizeof(char), BUF_SIZE, inputFile);
 
         if(!num_chars){
           break;
         }
   
-        non_vowels = copy_non_vowels(num_chars, in_buf, out_buf);
+        non_vowels = copy_non_vowels(num_chars, in_buff, out_buff);
 	      fwrite(out_buf, sizeof(char), non_vowels, outputFile); // tracking the number of non_vowels
      }
 
      fclose(outputFile);
      fclose(inputFile);
 
-     free(in_buf);
-     free(out_buf);
+     free(in_buff);
+     free(out_buff);
 
 }
 
