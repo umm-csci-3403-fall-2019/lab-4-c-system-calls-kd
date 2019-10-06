@@ -63,7 +63,7 @@ void disemvowel(FILE* inputFile, FILE* outputFile) {
         }
   
         non_vowels = copy_non_vowels(num_chars, in_buff, out_buff);
-	      fwrite(out_buf, sizeof(char), non_vowels, outputFile); // tracking the number of non_vowels
+	      fwrite(out_buff, sizeof(char), non_vowels, outputFile); // tracking the number of non_vowels
      }
 
      fclose(outputFile);
@@ -83,6 +83,24 @@ int main(int argc, char *argv[]) {
 
     // Code that processes the command line arguments
     // and sets up inputFile and outputFile.
+   if (argc == 1) {
+    inputFile = stdin;
+    outputFile = stdout;
+    }
+   else if(argc == 2){
+    inputFile = fopen(argv[1],"r");
+    outputFile = stdout;
+    }
+   else if(argc == 3){
+    inputFile = fopen(argv[1],"r");
+    outputFile = fopen(argv[2],"w");
+   }
+   else{
+    printf("Invalid input!");
+    exit(0);
+  }
+
+
 
     disemvowel(inputFile, outputFile);
 
