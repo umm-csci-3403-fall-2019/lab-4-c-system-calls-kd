@@ -34,9 +34,9 @@ bool is_dir(const char* path) {
  * This is necessary this because the multiple recursion means there's no way to
  * order them so that all the functions are defined before they're called.
  */
-void process_path(const char**);
+void process_path(const char*);
 
-void process_directory(const char* path) {
+
     /*
      * Update the number of directories seen, use opendir() to open the
      * directory, and then use readdir() to loop through the entries
@@ -48,27 +48,56 @@ void process_directory(const char* path) {
      * with a matching call to chdir() to move back out of it when you're
      * done.
      */
-   DIR *dir;
-   struct dirent* file;
-   dir = opendir(path);
-   chdir(path);
+void process_directory(const char* path) {
+  /*
+   * Update the number of directories seen, use opendir() to open the
+   * directory, and then use readdir() to loop through the entries
+   * and process them. You have to be careful not to process the
+   * "." and ".." directory entries, or you'll end up spinning in
+   * (infinite) loops. Also make sure you closedir() when you're done.
+   *
+   * You'll also want to use chdir() to move into this new directory,
+   * with a matching call to chdir() to move back out of it when you're
+   * done.
+   */
+    num_dirs++; //update the number of directories
+    struct dirent *cur_dir;
+    DIR *dir;
+    int errnum; //this int will be used to store the errno value for error messages
+    if((dir = opendir(path))==NULL){  //open the directory and checks for error
+      errnum = errno;
+      printf("Error opening directory: %s, the directory name: %s\n", strerror(errnum), path);
+      exit(1);
+    }
+    if(chdir(path)==-1){ //go to this directory and checks for error
+      errnum = errno;
+      printf("Error changing directory: %s, the directory name: %s\n", strerror(errnum), path);
+      exit(1);
+    }
+    while((cur_dir = readdir(dir))!=NULL){ //loop through the entries in the directory
 
-   if(dir == NULL){
-  		printf("Cannot open directory %s error code: %d\n", path, errno);
-  		return;
-  	}
+      // skip if the entries are ".." or "."
+      if((strcmp((cur_dir->d_name),"..")==0)||(strcmp((cur_dir->d_name),".")==0)){
+        continue;
+      }
 
-    file = readdir(dir);
-    while (file != NULL){
-		if (strcmp(file->d_name,".") != 0 && strcmp(file->d_name,"..") != 0 ){
-			process_path(file->d_name);
-		   }
-		file = readdir(dir);
-	}
-	num_dirs++;
-	chdir("..");
-	closedir(dir);
-}
+      //recursive call to check the entry
+      process_path(cur_dir->d_name);
+
+    }
+
+    if(chdir("..")==-1){ //go to the parent directory and checks for error
+      errnum = errno;
+      printf("Error changing directory: %s, the directory name: %s\n", strerror(errnum), "..");
+      exit(1);
+    }
+
+    if(closedir(dir)==-1){ //closes directory and checks for error
+      errnum = errno;
+      printf("Error closing directory: %s, the directory name: %s\n", strerror(errnum), path);
+      exit(1);
+    }
+  }
 
 
 void process_file(const char* path) {
