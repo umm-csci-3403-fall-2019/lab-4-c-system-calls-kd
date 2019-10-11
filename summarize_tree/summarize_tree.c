@@ -9,6 +9,11 @@
 static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
+     struct stat buf;  // checks if the path is a directory
+     stat(path, &buf);
+  	return S_ISDIR(buf.st_mode);  //retutn non-zero if the file is a directory
+
+
     /*
      * Use the stat() function (try "man 2 stat") to determine if the file
      * referenced by path is a directory or not. Call stat, and then use
@@ -21,6 +26,7 @@ bool is_dir(const char* path) {
      * you'll have a substantial memory leak (think of how many times this
      * will be called!).
      */
+
 }
 
 /*
@@ -41,12 +47,33 @@ void process_directory(const char* path) {
      * with a matching call to chdir() to move back out of it when you're
      * done.
      */
+   DIR *dir;
+   struct dirent* file;
+   dir = opendir(path);
+   chdir(path);
+
+   if(dir == NULL){
+  		printf("Cannot open directory %s error code: %d\n", path, errno);
+  		return;
+  	}
+
+    file = readdir(dir);
+    while (file != NULL){
+		if (strcmp(file->d_name,".") != 0 && strcmp(file->d_name,"..") != 0 ){
+			process_path(file->d_name);
+		   }
+		file = readdir(dir);
+	}
+	num_dirs++;
+	chdir("..");
+	closedir(dir);
 }
 
+
 void process_file(const char* path) {
-    /*
-     * Update the number of regular files.
-     */
+
+   num_regular++;  //Update the number of regular files.
+
 }
 
 void process_path(const char* path) {
