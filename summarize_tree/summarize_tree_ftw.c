@@ -7,14 +7,25 @@
 
  static int dirNumber, regularFileNum;
  static int callback(const char *fpath, const struct stat *sb, int typeflag) {
-    // Define stuff here
+   if(typeflag == FTW_F) {
+     regularFileNum++;
+   }
+   if(typeflag == FTW_D){
+     dirNumber++;
+   }
+
+       return 0;
+
+   
 }
 
 #define MAX_FTW_DEPTH 16
 
+
+
 int main(int argc, char** argv) {
     // Check arguments and set things up
-   if( argx !=2) {
+   if( argc !=2) {
      printf("Usage: %s <path>\n", argv[0]);
      return 1;
    }
@@ -24,7 +35,7 @@ int main(int argc, char** argv) {
     ftw(argv[1], callback, MAX_FTW_DEPTH);
 
     // Print out the results
-    printf("Number of directories : %d \n", dirNumber);
-    printf("Number of regular files : %d \n", num_regular);
+       printf("There were %d directories.\n", dirNumber);
+    printf("There were %d regular files.\n", regularFileNum);
      return 0;
 }
