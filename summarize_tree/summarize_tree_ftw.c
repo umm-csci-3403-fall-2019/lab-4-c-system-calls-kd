@@ -36,6 +36,6 @@ int main(int argc, char** argv) {
 
     // Print out the results
        printf("There were %d directories.\n", dirNumber);
-    printf("There were %d regular files.\n", regularFileNum);
+      printf("There were %d regular files.\n", regularFileNum);
      return 0;
 }
